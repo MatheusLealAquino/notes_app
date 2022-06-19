@@ -4,6 +4,14 @@ A note app
 
 App for manage notes cross platforms
 
+Techs:
+
+- Vue.JS 3
+  - Composition API
+  - Pinia
+  - Vue Router
+- Quasar
+
 TO-DO:
 
 - [ ] Firebase
