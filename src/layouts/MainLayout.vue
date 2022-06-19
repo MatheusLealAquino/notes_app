@@ -12,7 +12,7 @@
           @click="toggleLeftDrawer"
         />
 
-        <q-toolbar-title class="text-dark">
+        <q-toolbar-title class="text-dark" @click="$router.push('/')">
           Matheus <b class="text-amber-5">Notes</b>
         </q-toolbar-title>
       </q-toolbar>
@@ -20,15 +20,48 @@
 
     <q-drawer v-model="leftDrawerOpen" show-if-above bordered>
       <q-list>
-        <q-item-label header> Pastas </q-item-label>
+        <q-item-label header> Notas </q-item-label>
 
-        <EssentialLink
-          v-for="link in essentialLinks"
-          :key="link.title"
-          v-bind="link"
-        />
+        <q-item @click="toggleModal" clickable>
+          <q-item-section avatar>
+            <q-icon name="add" />
+          </q-item-section>
+
+          <q-item-section>
+            <q-item-label>Adicionar nota</q-item-label>
+          </q-item-section>
+        </q-item>
+
+        <q-separator />
+
+        <div v-for="note in notes" :key="note.id">
+          <EssentialLink v-bind="note" />
+          <q-separator />
+        </div>
       </q-list>
     </q-drawer>
+
+    <q-dialog v-model="modalOpen" persistent>
+      <q-card style="min-width: 350px">
+        <q-card-section>
+          <div class="text-h6">Nome da nota</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          <q-input
+            dense
+            v-model="noteName"
+            autofocus
+            @keyup.enter="createFolder"
+          />
+        </q-card-section>
+
+        <q-card-actions align="right" class="text-primary">
+          <q-btn flat label="Cancel" v-close-popup />
+          <q-btn flat label="Adicionar nota" @click="createFolder" />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
 
     <q-page-container>
       <router-view />
@@ -37,53 +70,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
+import { useNoteStore } from '../stores/note';
 import EssentialLink from 'components/EssentialLink.vue';
-
-const linksList = [
-  {
-    title: 'Docs',
-    caption: 'quasar.dev',
-    icon: 'school',
-    link: 'https://quasar.dev',
-  },
-  {
-    title: 'Github',
-    caption: 'github.com/quasarframework',
-    icon: 'code',
-    link: 'https://github.com/quasarframework',
-  },
-  {
-    title: 'Discord Chat Channel',
-    caption: 'chat.quasar.dev',
-    icon: 'chat',
-    link: 'https://chat.quasar.dev',
-  },
-  {
-    title: 'Forum',
-    caption: 'forum.quasar.dev',
-    icon: 'record_voice_over',
-    link: 'https://forum.quasar.dev',
-  },
-  {
-    title: 'Twitter',
-    caption: '@quasarframework',
-    icon: 'rss_feed',
-    link: 'https://twitter.quasar.dev',
-  },
-  {
-    title: 'Facebook',
-    caption: '@QuasarFramework',
-    icon: 'public',
-    link: 'https://facebook.quasar.dev',
-  },
-  {
-    title: 'Quasar Awesome',
-    caption: 'Community Quasar projects',
-    icon: 'favorite',
-    link: 'https://awesome.quasar.dev',
-  },
-];
 
 export default defineComponent({
   name: 'MainLayout',
@@ -93,13 +82,32 @@ export default defineComponent({
   },
 
   setup() {
+    const noteStore = useNoteStore();
+
     const leftDrawerOpen = ref(false);
+    const modalOpen = ref(false);
+    const noteName = ref('');
+
+    function createFolder() {
+      noteStore.addNote({
+        title: noteName.value,
+      });
+
+      noteName.value = '';
+      modalOpen.value = false;
+    }
 
     return {
-      essentialLinks: linksList,
+      notes: computed(() => noteStore.getAllNotes),
       leftDrawerOpen,
+      modalOpen,
+      noteName,
+      createFolder,
       toggleLeftDrawer() {
         leftDrawerOpen.value = !leftDrawerOpen.value;
+      },
+      toggleModal() {
+        modalOpen.value = !modalOpen.value;
       },
     };
   },
