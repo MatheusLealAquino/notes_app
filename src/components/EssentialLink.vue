@@ -1,14 +1,6 @@
 <template>
-  <q-item
-    clickable
-    tag="a"
-    target="_blank"
-    :href="link"
-  >
-    <q-item-section
-      v-if="icon"
-      avatar
-    >
+  <q-item clickable @click="movePage">
+    <q-item-section v-if="icon" avatar>
       <q-icon :name="icon" />
     </q-item-section>
 
@@ -20,30 +12,53 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
 
 export default defineComponent({
   name: 'EssentialLink',
+
   props: {
     title: {
       type: String,
-      required: true
+      required: true,
+    },
+
+    id: {
+      type: String,
+      required: true,
     },
 
     caption: {
       type: String,
-      default: ''
+      default: '',
     },
 
     link: {
       type: String,
-      default: '#'
+      default: '#',
     },
 
     icon: {
       type: String,
-      default: ''
+      default: '',
+    },
+  },
+
+  setup(props) {
+    const router = useRouter();
+
+    const newName = ref(props.title);
+
+    async function movePage() {
+      await router.push(`/note/${props.id}`);
+      location.reload();
     }
-  }
+
+    return {
+      newName,
+      movePage,
+    };
+  },
 });
 </script>
