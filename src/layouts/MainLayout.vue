@@ -35,7 +35,7 @@
         <q-separator />
 
         <div v-for="note in notes" :key="note.id">
-          <EssentialLink v-bind="note" />
+          <NoteMenu v-bind="note" />
           <q-separator />
         </div>
       </q-list>
@@ -72,13 +72,13 @@
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
 import { useNoteStore } from '../stores/note';
-import EssentialLink from 'components/EssentialLink.vue';
+import NoteMenu from 'components/NoteMenu.vue';
 
 export default defineComponent({
   name: 'MainLayout',
 
   components: {
-    EssentialLink,
+    NoteMenu,
   },
 
   setup() {
