@@ -7,7 +7,7 @@
     </q-input>
 
     <q-editor
-      v-model="note"
+      v-model="noteData"
       min-height="20rem"
       width="100%"
       :toolbar="[
@@ -86,7 +86,7 @@ export default defineComponent({
 
     const noteStore = useNoteStore();
 
-    const note = ref('');
+    const noteData = ref('');
     const noteTitle = ref('');
     const modalOpen = ref(false);
 
@@ -98,11 +98,11 @@ export default defineComponent({
       const foundNote = noteStore.getNoteById({
         id,
       });
-      note.value = foundNote?.noteData || '';
+      noteData.value = foundNote?.noteData || '';
       noteTitle.value = foundNote?.title || '';
     });
 
-    watch(note, (newValue) => {
+    watch(noteData, (newValue) => {
       if (id) {
         noteStore.updateText({
           id,
@@ -129,7 +129,7 @@ export default defineComponent({
     }
 
     return {
-      note,
+      noteData,
       noteTitle,
       modalOpen,
       deleteNote,
