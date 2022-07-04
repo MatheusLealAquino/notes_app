@@ -3,6 +3,14 @@ import { useStorage } from '@vueuse/core';
 
 import { Note } from '../components/models';
 
+import {
+  addNote,
+  getNote,
+  getNotes,
+  updateNote,
+  deleteNote,
+} from '../service/note.service';
+
 export const useNoteStore = defineStore('note', {
   state: () => ({
     notes: useStorage('notes', [] as Note[]),
@@ -13,19 +21,30 @@ export const useNoteStore = defineStore('note', {
     },
   },
   actions: {
-    addNote({ title }: { title: string }) {
+    async addNote({ title }: { title: string }) {
       const foundFolder = this.notes.find((note) => note.title === title);
       if (foundFolder) return;
 
-      this.notes.push({
-        id: new Date().getTime().toString(),
+      const toInsert = {
         title,
         noteData: '',
         createdAt: new Date(),
+      };
+
+      const addedNote = await addNote(toInsert);
+
+      this.notes.push({
+        id: addedNote.id,
+        ...toInsert,
       });
     },
     getNoteById({ id }: { id: string }) {
-      return this.notes.find((note) => note.id === id);
+      const localNote = this.notes.find((note) => note.id === id);
+      if (localNote) return localNote;
+
+      return getNote({
+        id,
+      });
     },
     updateTitle({ id, title }: { id: string; title: string }) {
       const index = this.notes.findIndex((note) => note.id === id);
