@@ -92,14 +92,17 @@ export default defineComponent({
 
     let id: string;
 
-    onMounted(() => {
+    onMounted(async () => {
       id = route.params.id as string;
 
-      const foundNote = noteStore.getNoteById({
+      const foundNote = await noteStore.getNoteById({
         id,
       });
-      noteData.value = foundNote?.noteData || '';
-      noteTitle.value = foundNote?.title || '';
+
+      if (foundNote) {
+        noteData.value = foundNote?.noteData || '';
+        noteTitle.value = foundNote?.title || '';
+      }
     });
 
     watch(noteData, (newValue) => {
