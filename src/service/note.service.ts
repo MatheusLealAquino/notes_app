@@ -29,14 +29,23 @@ export async function getNotes({
 }): Promise<Note[]> {
   const q = query(collectionInstance, where('userId', '==', userId));
   const notes = await getDocs(q);
-  return notes.docs.map((note) => note.data()) as Note[];
+  return notes.docs.map((note) => ({
+    id: note.id,
+    ...note.data(),
+  })) as Note[];
 }
 
 export async function getNote({ id }: { id: string }): Promise<Note | null> {
   const docRef = doc(db, COLLECTION_NAME, id);
   const docSnap = await getDoc(docRef);
 
-  if (docSnap.exists()) return docSnap.data() as Note;
+  if (docSnap.exists()) {
+    return {
+      id: docSnap.id,
+      ...docSnap.data(),
+    } as Note;
+  }
+
   return null;
 }
 

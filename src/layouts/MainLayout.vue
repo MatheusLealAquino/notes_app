@@ -13,8 +13,32 @@
         />
 
         <q-toolbar-title class="text-dark" @click="$router.push('/')">
-          Matheus <b class="text-amber-5">Notes</b>
+          {{ userName }} <b class="text-amber-5">Notes</b>
         </q-toolbar-title>
+
+        <q-btn
+          v-if="!isLogged"
+          @click="authenticateUser"
+          flat
+          round
+          dense
+          icon="login"
+          color="black"
+        >
+          Entrar
+        </q-btn>
+
+        <q-btn
+          v-if="isLogged"
+          @click="logoutUser"
+          flat
+          round
+          dense
+          icon="logout"
+          color="black"
+        >
+          Sair
+        </q-btn>
       </q-toolbar>
     </q-header>
 
@@ -22,7 +46,7 @@
       <q-list>
         <q-item-label header> Notas </q-item-label>
 
-        <q-item @click="toggleModal" clickable>
+        <q-item v-if="isLogged" @click="toggleModal" clickable>
           <q-item-section avatar>
             <q-icon name="add" />
           </q-item-section>
@@ -71,7 +95,11 @@
 
 <script lang="ts">
 import { computed, defineComponent, ref } from 'vue';
+import { useRouter } from 'vue-router';
+
 import { useNoteStore } from '../stores/note';
+import { useUserStore } from '../stores/user';
+
 import NoteMenu from 'components/NoteMenu.vue';
 
 export default defineComponent({
@@ -83,6 +111,8 @@ export default defineComponent({
 
   setup() {
     const noteStore = useNoteStore();
+    const userStore = useUserStore();
+    const router = useRouter();
 
     const leftDrawerOpen = ref(false);
     const modalOpen = ref(false);
@@ -90,6 +120,7 @@ export default defineComponent({
 
     function createFolder() {
       noteStore.addNote({
+        userId: userStore.user.id,
         title: noteName.value,
       });
 
@@ -97,18 +128,42 @@ export default defineComponent({
       modalOpen.value = false;
     }
 
+    function toggleLeftDrawer() {
+      leftDrawerOpen.value = !leftDrawerOpen.value;
+    }
+
+    function toggleModal() {
+      modalOpen.value = !modalOpen.value;
+    }
+
+    async function authenticateUser() {
+      await userStore.authenticateWithGoogle();
+      await noteStore.syncNotes({
+        userId: userStore.user.id,
+      });
+    }
+
+    async function logoutUser() {
+      userStore.logoutUser();
+      noteStore.clearLocalNotes();
+      await router.push('/');
+    }
+
     return {
+      userName: computed(() => {
+        const userName = userStore.user.name;
+        return userName ? userName.split(' ')[0] : '';
+      }),
+      isLogged: computed(() => userStore.isLogged),
       notes: computed(() => noteStore.getAllNotes),
       leftDrawerOpen,
       modalOpen,
       noteName,
       createFolder,
-      toggleLeftDrawer() {
-        leftDrawerOpen.value = !leftDrawerOpen.value;
-      },
-      toggleModal() {
-        modalOpen.value = !modalOpen.value;
-      },
+      toggleLeftDrawer,
+      toggleModal,
+      authenticateUser,
+      logoutUser,
     };
   },
 });

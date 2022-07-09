@@ -33,5 +33,12 @@ export const useUserStore = defineStore('user', {
         console.error(error);
       }
     },
+    logoutUser() {
+      this.user = {
+        id: '',
+        name: '',
+        email: '',
+      };
+    },
   },
 });

@@ -84,5 +84,8 @@ export const useNoteStore = defineStore('note', {
       this.notes.splice(index, 1);
       await deleteNote({ id });
     },
+    clearLocalNotes() {
+      this.notes = [];
+    },
   },
 });
