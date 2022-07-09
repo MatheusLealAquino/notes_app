@@ -4,4 +4,12 @@ export interface Note {
   noteData: string;
   createdAt: Date;
   updatedAt?: Date;
+  userId: string;
+}
+
+export interface User {
+  id: string;
+  name: string;
+  email: string;
+  lastLoginAt?: Date;
 }
