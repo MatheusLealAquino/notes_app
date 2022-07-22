@@ -98,7 +98,7 @@ export const useNoteStore = defineStore('note', {
 
       orderedNotes.forEach((note, index) => {
         if (!note.orderIndex) {
-          note.orderIndex = index;
+          note.orderIndex = index + 1;
           toUpdate.push(note);
         } else {
           const foundNote = this.getLocalNoteById({
@@ -107,7 +107,7 @@ export const useNoteStore = defineStore('note', {
           if (foundNote?.orderIndex !== index) {
             toUpdate.push({
               ...note,
-              orderIndex: index,
+              orderIndex: index + 1,
             });
           }
         }
