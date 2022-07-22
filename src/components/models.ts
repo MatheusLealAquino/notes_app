@@ -2,6 +2,7 @@ export interface Note {
   id: string;
   title: string;
   noteData: string;
+  orderIndex: number;
   createdAt: Date;
   updatedAt?: Date;
   userId: string;

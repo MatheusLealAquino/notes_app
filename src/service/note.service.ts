@@ -8,6 +8,7 @@ import {
   getDoc,
   query,
   where,
+  orderBy,
 } from 'firebase/firestore';
 
 import { db } from '../boot/firebaseConnection';
@@ -27,7 +28,11 @@ export async function getNotes({
 }: {
   userId: string;
 }): Promise<Note[]> {
-  const q = query(collectionInstance, where('userId', '==', userId));
+  const q = query(
+    collectionInstance,
+    where('userId', '==', userId),
+    orderBy('orderIndex')
+  );
   const notes = await getDocs(q);
   return notes.docs.map((note) => ({
     id: note.id,
@@ -53,15 +58,18 @@ export function updateNote({
   id,
   title,
   noteData,
+  orderIndex,
 }: {
   id: string;
   title?: string;
   noteData?: string;
+  orderIndex?: number;
 }) {
   const docRef = doc(db, COLLECTION_NAME, id);
   const dto: {
     title?: string;
     noteData?: string;
+    orderIndex?: number;
     updatedAt: Date;
   } = {
     updatedAt: new Date(),
@@ -69,6 +77,7 @@ export function updateNote({
 
   if (title) dto.title = title;
   if (noteData) dto.noteData = noteData;
+  if (orderIndex) dto.orderIndex = orderIndex;
 
   return updateDoc(docRef, dto);
 }

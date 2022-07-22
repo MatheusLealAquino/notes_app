@@ -58,10 +58,20 @@
 
         <q-separator />
 
-        <div v-for="note in notes" :key="note.id">
-          <NoteMenu v-bind="note" />
-          <q-separator />
-        </div>
+        <draggable
+          v-model="notes"
+          group="note"
+          @start="drag = true"
+          @end="drag = false"
+          item-key="element.id"
+        >
+          <template #item="{ element }">
+            <div>
+              <NoteMenu v-bind="element" />
+              <q-separator />
+            </div>
+          </template>
+        </draggable>
       </q-list>
     </q-drawer>
 
@@ -97,8 +107,12 @@
 import { computed, defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
+import { Note } from 'src/components/models';
+
 import { useNoteStore } from '../stores/note';
 import { useUserStore } from '../stores/user';
+
+import draggable from 'vuedraggable';
 
 import NoteMenu from 'components/NoteMenu.vue';
 
@@ -107,6 +121,7 @@ export default defineComponent({
 
   components: {
     NoteMenu,
+    draggable,
   },
 
   setup() {
@@ -117,6 +132,7 @@ export default defineComponent({
     const leftDrawerOpen = ref(false);
     const modalOpen = ref(false);
     const noteName = ref('');
+    const drag = ref(false);
 
     function createFolder() {
       noteStore.addNote({
@@ -155,10 +171,21 @@ export default defineComponent({
         return userName ? userName.split(' ')[0] : '';
       }),
       isLogged: computed(() => userStore.isLogged),
-      notes: computed(() => noteStore.getAllNotes),
+      // notes: computed(() => noteStore.getAllNotes),
+      notes: computed({
+        get() {
+          return noteStore.getAllNotes;
+        },
+        set(value) {
+          noteStore.reorderNotes({
+            orderedNotes: value as Note[],
+          });
+        },
+      }),
       leftDrawerOpen,
       modalOpen,
       noteName,
+      drag,
       createFolder,
       toggleLeftDrawer,
       toggleModal,

@@ -37,6 +37,7 @@ export const useNoteStore = defineStore('note', {
         noteData: '',
         createdAt: new Date(),
         userId,
+        orderIndex: this.notes.length,
       };
 
       const addedNote = await addNote(toInsert);
@@ -46,8 +47,13 @@ export const useNoteStore = defineStore('note', {
         ...toInsert,
       });
     },
+    getLocalNoteById({ id }: { id: string }) {
+      return this.notes.find((note) => note.id === id);
+    },
     async getNoteById({ id }: { id: string }) {
-      const localNote = this.notes.find((note) => note.id === id);
+      const localNote = this.getLocalNoteById({
+        id,
+      });
       if (localNote) return localNote;
 
       return getNote({
@@ -86,6 +92,36 @@ export const useNoteStore = defineStore('note', {
     },
     clearLocalNotes() {
       this.notes = [];
+    },
+    async reorderNotes({ orderedNotes }: { orderedNotes: Note[] }) {
+      const toUpdate: Note[] = [];
+
+      orderedNotes.forEach((note, index) => {
+        if (!note.orderIndex) {
+          note.orderIndex = index;
+          toUpdate.push(note);
+        } else {
+          const foundNote = this.getLocalNoteById({
+            id: note.id,
+          });
+          if (foundNote?.orderIndex !== index) {
+            toUpdate.push({
+              ...note,
+              orderIndex: index,
+            });
+          }
+        }
+      });
+
+      this.notes = orderedNotes;
+
+      for (let i = 0; i < toUpdate.length; i++) {
+        const noteToUpdate = toUpdate[i];
+        await updateNote({
+          id: noteToUpdate.id,
+          orderIndex: noteToUpdate.orderIndex,
+        });
+      }
     },
   },
 });
