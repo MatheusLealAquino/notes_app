@@ -3,7 +3,7 @@ import { useStorage } from '@vueuse/core';
 
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
-import { User } from '../components/models';
+import { User } from '../models/models';
 
 export const useUserStore = defineStore('user', {
   state: () => ({

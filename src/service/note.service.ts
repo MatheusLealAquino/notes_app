@@ -13,7 +13,7 @@ import {
 
 import { db } from '../boot/firebaseConnection';
 
-import { Note } from '../components/models';
+import { Note } from '../models/models';
 
 const COLLECTION_NAME = 'note';
 

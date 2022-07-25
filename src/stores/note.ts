@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { useStorage } from '@vueuse/core';
 
-import { Note } from '../components/models';
+import { Note } from '../models/models';
 
 import {
   addNote,
