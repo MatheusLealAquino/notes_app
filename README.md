@@ -14,7 +14,7 @@ Techs:
 
 TO-DO:
 
-- [ ] Firebase
+- [x] Firebase
 - [ ] Salvar como txt
 
 ## Install the dependencies
