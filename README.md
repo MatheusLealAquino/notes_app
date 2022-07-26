@@ -15,7 +15,11 @@ Techs:
 TO-DO:
 
 - [x] Firebase
-- [ ] Salvar como txt
+- [ ] Save as TXT | Salvar como TXT
+
+|                   Tela inicial / Home screen                    |                   Login com Google / Login with Google                    |                    Primeira Nota / First Note                    |                      Página da Nota / Note page                       |
+| :-------------------------------------------------------------: | :-----------------------------------------------------------------------: | :--------------------------------------------------------------: | :-------------------------------------------------------------------: |
+| ![Tela inicial / Home screen](images_readme/1_tela_inicial.png) | ![Login com Google / Login with Google](images_readme/2_login_google.png) | ![Primeira Nota / First Note](images_readme/3_primeira_nota.png) | ![Página da Nota / Note page](images_readme/4_pagina_edicao_nota.png) |
 
 ## Install the dependencies
 
